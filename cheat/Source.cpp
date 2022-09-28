@@ -15,11 +15,21 @@ namespace offsets
 	constexpr auto glowIndex = 0x10488;
 }
 
+struct Color
+{
+	constexpr Color(float r, float g, float b, float a = 1.f) noexcept :
+		r(r), g(g), b(b), a(a) { }
+
+	float r, g, b, a;
+};
+
 int main()
 {
 	auto mem = Memory("csgo.exe");
 
 	const auto client = mem.GetModuleAddress("client.dll");
+
+	const auto color = Color(1.f, 1.f, 0.f);
 
 	while (true)
 	{
@@ -36,10 +46,7 @@ int main()
 
 			const auto glowIndex = mem.Read<int32_t>(entity + offsets::glowIndex);
 
-			mem.Write<float>(glowObjectManager + (glowIndex * 0x38) + 0x8, 1.f);
-			mem.Write<float>(glowObjectManager + (glowIndex * 0x38) + 0xC, 0.f);
-			mem.Write<float>(glowObjectManager + (glowIndex * 0x38) + 0x10, 0.f);
-			mem.Write<float>(glowObjectManager + (glowIndex * 0x38) + 0x14, 1.f);
+			mem.Write<Color>(glowObjectManager + (glowIndex * 0x38) + 0x8, color);
 
 			mem.Write<bool>(glowObjectManager + (glowIndex * 0x38) + 0x27, true);
 			mem.Write<bool>(glowObjectManager + (glowIndex * 0x38) + 0x28, true);
