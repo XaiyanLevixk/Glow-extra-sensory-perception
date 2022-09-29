@@ -13,6 +13,7 @@ namespace offsets
 	// entity
 	constexpr auto teamNum = 0xF4;
 	constexpr auto glowIndex = 0x10488;
+	constexpr auto m_health = 0x100;
 }
 
 struct Color
@@ -29,12 +30,10 @@ int main()
 
 	const auto client = mem.GetModuleAddress("client.dll");
 
-	const auto color = Color(1.f, 1.f, 0.f);
-
 	while (true)
 	{
 		const auto localPlayer = mem.Read<uintptr_t>(client + offsets::localPlayer);
-
+			
 		const auto glowObjectManager = mem.Read<uintptr_t>(client + offsets::glowObjectManager);
 
 		for (auto i = 0; i < 64; i++)
@@ -45,6 +44,12 @@ int main()
 				continue;
 
 			const auto glowIndex = mem.Read<int32_t>(entity + offsets::glowIndex);
+
+			const auto entityHealth = mem.Read<uintptr_t>(entity + offsets::m_health);
+
+			float flag_h = entityHealth / float(100);
+
+			auto color = Color(1.f - flag_h , 0.f + flag_h, 0.f);
 
 			mem.Write<Color>(glowObjectManager + (glowIndex * 0x38) + 0x8, color);
 
